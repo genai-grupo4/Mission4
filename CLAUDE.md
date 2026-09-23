@@ -50,6 +50,11 @@ python3 atencion/test_atencion.py atencion.py
 
 En la parte 3, `agente_mcp.py` no puede tener lógica propia para llamar a la API o al recuperador: todo tiene que pasar por `servidor_mcp.py` vía `tools/list` / `tools/call` (SDK oficial `mcp`, transporte stdio).
 
+## LangChain obligatorio (partes 2 y 3)
+
+- `agente.py`: el modelo se conecta con `ChatOpenAI` de `langchain-openai`, apuntando a OpenRouter (`base_url="https://openrouter.ai/api/v1"`), y cada una de las 6 herramientas es una tool de LangChain.
+- `agente_mcp.py`: también hecho con LangChain. Las herramientas del servidor MCP se cargan como tools de LangChain con `langchain-mcp-adapters`, no con el SDK `mcp` a mano.
+
 ## Modelos (OpenRouter, obligatorios, no cambiar sin anotarlo en el informe)
 
 - Agente (partes 2 y 3): `deepseek/deepseek-v4-flash-0731`
@@ -70,6 +75,8 @@ Seguir la forma de trabajo de la clase 2: `CLAUDE.md` (este archivo), un `SPEC.m
 ## Parte 5 — excepción total
 
 `a_mano/ejercicio.md` se resuelve **a mano, en papel, sin ninguna IA**. No generar el desarrollo ni las respuestas con Claude Code — el criterio de la cátedra pesa la justificación escrita a mano de cada operación. El único rol de la IA acá es, como mucho, ayudar a verificar el resultado final con `atencion.py` de la parte 4, nunca a resolver el ejercicio.
+
+Antes de hacer las cuentas de la parte 4/5, mirar el video [Attention in transformers, step-by-step](https://www.youtube.com/watch?v=eMlx5fFNoYc) (3Blue1Brown, Deep Learning Chapter 6) — lo pide `mission.md`.
 
 ## Antes de correr nada
 

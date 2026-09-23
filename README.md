@@ -50,6 +50,11 @@ export OPENROUTER_API_KEY=...      # necesario para el agente (partes 2 y 3) y e
 
 Cada corrida del evaluador con juez cuesta plata real de la cuenta del grupo — correrlo solo cuando haya un cambio que valga medir.
 
+## LangChain obligatorio (partes 2 y 3)
+
+- `agente.py`: el modelo se conecta con `ChatOpenAI` de `langchain-openai` apuntando a OpenRouter (`base_url="https://openrouter.ai/api/v1"`), y cada herramienta es una tool de LangChain.
+- `agente_mcp.py`: también en LangChain, cargando las herramientas del servidor MCP con `langchain-mcp-adapters`.
+
 ## Comandos por parte
 
 ```bash
@@ -75,7 +80,7 @@ python3 atencion/test_atencion.py atencion.py
 - Las 6 herramientas del agente (`buscar_documentos`, `consultar_camas`, `consultar_guardia`, `consultar_turnos`, `consultar_farmacia`, `consultar_espera`) tienen que llamarse exactamente así, en las partes 2 y 3.
 - Parte 1: toda configuración probada necesita su `.eval.json` en `experimentos/` para contar en la tabla del informe.
 - Partes 2 y 3: sin el log `.md` de la corrida, esa parte vale cero.
-- Parte 5 se resuelve a mano, en papel, **sin IA**.
+- Parte 5 se resuelve a mano, en papel, **sin IA**. Antes de hacer las cuentas (partes 4 y 5), mirar [Attention in transformers, step-by-step](https://www.youtube.com/watch?v=eMlx5fFNoYc) (3Blue1Brown, Deep Learning Chapter 6).
 - Trabajar con IA (Claude Code, Codex, Copilot, etc.) para las partes 1 a 4, con la metodología de la clase 2: `CLAUDE.md`, `SPEC.md`, TDD e historia de commits limpia. Ver [`CLAUDE.md`](./CLAUDE.md).
 
 ## Informe final
