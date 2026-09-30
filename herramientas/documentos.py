@@ -10,9 +10,10 @@ corre end-to-end igual, y el día que aparezca el recuperador real no hay que to
 import sys
 from functools import lru_cache
 
-# None = dejar que mande la configuración ganadora de la parte 1 (bge-m3, chunking por sección
-# con metadatos, k=1), que da context_relevance 1.0. Traer fragmentos de más solo agregaría
-# ruido a los contextos, que es justo lo que le baja la nota al juez del agente.
+# None = manda la configuración ganadora de la parte 1 (bge-m3, sección con metadatos, k=1).
+# Probamos k=2 pensando que al agente le vendría bien más contexto: el juez bajó
+# context_relevance de 5.0 a 4.5, porque el segundo fragmento casi siempre es texto ajeno.
+# Las dos corridas están en experimentos/ y la comparación en INFORME.md §Parte 2.
 TOP_K = None
 
 _ya_avisamos = False
