@@ -1,6 +1,6 @@
 # SPEC — Parte 1: RAG vectorial (`recuperar.py`)
 
-Estado: borrador, antes de escribir código. Fuente de verdad de la consigna: `mission.md` §"Parte 1". Este documento fija las decisiones de diseño y el plan de experimentos antes de tocar código, según la metodología de `CLAUDE.md`.
+Estado: implementado (ver "Decisiones" al final). Fuente de verdad de la consigna: `mission.md` §"Parte 1". Este documento fija las decisiones de diseño y el plan de experimentos antes de tocar código, según la metodología de `CLAUDE.md`.
 
 ## Objetivo
 
@@ -109,9 +109,12 @@ experimentos/
 - La configuración entregada le gana con claridad a la baseline de BERT sin ajustar.
 - El informe explica, con los números de la tabla de experimentos, por qué ganó el encoder elegido.
 
-## Decisiones abiertas (a resolver durante la implementación, actualizar este archivo cuando se cierren)
+## Decisiones (cerradas con los resultados de `experimentos/`, detalle en `INFORME.md`)
 
-- [ ] ¿Chunking final: por sección Markdown o por tamaño fijo? — depende de los resultados del barrido.
-- [ ] ¿Se usa metadata (título de doc/sección antepuesto)? — probar con y sin, comparar `context_relevance`.
-- [ ] ¿Vale la pena el reranking con cross-encoder dado el tamaño chico del corpus? — evaluar costo/beneficio en tiempo vs. mejora.
-- [ ] Formato del archivo de config ganadora: ¿constantes en `recuperar.py` o un `config.yaml`/`config.json` separado?
+- [x] Chunking final: **por sección Markdown**. Con metadatos es el mejor en promedio sobre los encoders de oraciones (0,938).
+- [x] Metadatos: **sí**, título del documento + sección antepuestos solo al texto que se embebe. Resuelven los casos donde lo que distingue la respuesta está en el subtítulo (R01, R02).
+- [x] Reranking con cross-encoder: **no**. mMARCO-MiniLM rankea peor que bge-m3 solo (0,80–0,90).
+- [x] top-k / umbral: **k = 1, sin umbral**. Con una evidencia por pregunta, cada fragmento extra baja la precisión. Umbral y margen empatan en el mejor caso, así que se entrega lo más simple.
+- [x] Encoder: **`BAAI/bge-m3`**, el más estable entre chunkings y con mejor separación de cosenos. `e5base` es la alternativa más liviana, con el mismo 1,0 en dev.
+- [x] Formato de config: `config_recuperador.json`, que lee `recuperar.py`. Los flags `--encoder/--chunking/--k/...` son opcionales y solo sirven para experimentar.
+- Estado: implementado. `resultados.jsonl` con la config entregada: context_relevance 1,0 en dev.
