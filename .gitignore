@@ -4,3 +4,10 @@ _catedra/
 # Secretos (API keys) - nunca commitear
 .env
 .env.*
+
+# Entorno virtual y basura del sistema
+.venv/
+.DS_Store
+__pycache__/
+*.pyc
+.pytest_cache/
