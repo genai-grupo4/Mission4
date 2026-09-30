@@ -150,8 +150,8 @@ Smoke test real contra OpenRouter (1 pregunta, A05): el agente llamó a `consult
 ## Qué queda pendiente de la parte 1
 
 - [x] Enchufar `recuperar.buscar` real en `herramientas/documentos.py`. Llegó con la firma acordada, así que el adaptador lo tomó sin cambios.
-- [x] Definir el `top_k` de `buscar_documentos`: queda en `None`, delegando en la configuración ganadora de la parte 1 (bge-m3, sección con metadatos, k=1, `context_relevance` 1.0). Los dos criterios empujan para el mismo lado — allá penaliza la precision de los fragmentos, acá el ruido en los contextos —, así que no hay razón para pedir más fragmentos de los que la parte 1 midió como óptimos. Si la evaluación del agente muestra que a alguna pregunta le falta contexto, se sube acá y se vuelve a medir.
-- [ ] Corrida real del benchmark + `respuestas.jsonl.eval.json` + análisis de fallos en `INFORME.md`.
+- [x] Definir el `top_k` de `buscar_documentos`: queda en `None`, delegando en la configuración ganadora de la parte 1 (k=1). Se midió contra `top_k=2` con dos corridas completas y juez: k=1 da 5,00/5,00/5,00 y k=2 baja `context_relevance` a 4,50 sin mejorar nada. Los dos criterios empujan para el mismo lado. Detalle en `INFORME.md` §Parte 2.
+- [x] Corrida real del benchmark + `respuestas.jsonl.eval.json` + análisis en `INFORME.md` §Parte 2. Resultado: ruteo 1,000 y 5,00/5,00/5,00 del juez.
 
 ## Decisiones abiertas
 

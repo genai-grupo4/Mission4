@@ -76,11 +76,25 @@ python3 atencion/test_atencion.py atencion.py
 
 ## Estado del código
 
-| Parte | Estado |
-|---|---|
-| 1 | SPEC en `specs/parte1-rag.md`. `recuperar.py` pendiente. |
-| 2 | `agente.py` + `herramientas/` funcionando contra la API real. Falta enchufar el recuperador (hoy usa un stub) y la corrida del benchmark. SPEC en `specs/parte2-agente.md`. |
-| 3, 4, 5 | pendientes |
+| Parte | Estado | Resultado |
+|---|---|---|
+| 1 | **terminada** — `recuperar.py` + `rag/`, 136 experimentos en `experimentos/` | context_relevance **1.000** |
+| 2 | **terminada** — `agente.py` + `herramientas/` | ruteo **1.000**, juez **5,00 / 5,00 / 5,00** |
+| 3 | pendiente — `servidor_mcp.py` + `agente_mcp.py` + capturas del Inspector | |
+| 4 | pendiente — `atencion.py` | |
+| 5 | pendiente — a mano, sin IA | |
+
+Los SPEC están en `specs/` (uno por parte) y el análisis de cada parte en `INFORME.md`.
+
+### Qué falta para cerrar la entrega
+
+**Parte 3 (15 pts).** Mover las 6 herramientas a `servidor_mcp.py` (SDK `mcp`, stdio) y armar `agente_mcp.py` con `langchain-mcp-adapters`. La lógica ya está factorizada para esto: `herramientas/api_hospital.py` y `herramientas/documentos.py` son funciones planas, y `herramientas/tools.py` es solo la capa de LangChain encima — el servidor MCP puede envolver las mismas funciones sin duplicar nada. El loop de `agente.py` (`responder`, `correr`) recibe el catálogo de herramientas por parámetro, así que `agente_mcp.py` lo puede reutilizar pasándole las tools que vengan del servidor. Ojo con un detalle: las tools de `langchain-mcp-adapters` son async, así que hay que resolver eso (pasar el loop a async es lo más limpio, y `agente.py` seguiría igual por fuera). Faltan también las capturas del MCP Inspector en `experimentos/inspector/`.
+
+**Parte 4 (15 pts).** `atencion.py` con NumPy: `softmax`, `atencion`, `autoatencion` (con máscara causal opcional), `multicabeza` y `layer_norm`. No depende de nada de lo anterior y se verifica sola con `python3 atencion/test_atencion.py atencion.py` (14 tests).
+
+**Parte 5 (15 pts).** A mano, en papel, **sin IA**. Mirar antes el video de 3Blue1Brown que pide `mission.md`.
+
+**Informe.** Falta la sección de la parte 3 (comparación de métricas y costo contra la parte 2) y el costo total de la misión contrastado con el dashboard de OpenRouter. Gastado hasta ahora: USD 0,0066 del agente (dos corridas) + USD 0,0354 del juez (dos evaluaciones) = **USD 0,042**.
 
 ### Interfaz entre la parte 1 y la parte 2
 
@@ -92,7 +106,9 @@ def buscar(consulta: str, top_k: int | None = None) -> list[str]:
     top_k=None usa la configuración ganadora fija de la parte 1."""
 ```
 
-Devuelve texto crudo del corpus (sin reformatear) y carga el encoder de forma perezosa, en la primera llamada. `herramientas/documentos.py` la usa cuando existe y cae a un stub mientras tanto, avisando por `stderr`: el día que `recuperar.py` aparezca, la parte 2 lo toma sin cambios.
+Devuelve texto crudo del corpus (sin reformatear) y carga el encoder de forma perezosa, en la primera llamada. `herramientas/documentos.py` la usa cuando existe y cae a un stub si no, avisando por `stderr`. Quedó implementada tal cual, así que la parte 2 la tomó sin cambios.
+
+El agente **no pisa** el `top_k` de la parte 1 (`TOP_K = None`): se probó con `top_k=2` y el juez bajó `context_relevance` de 5,00 a 4,50, porque el segundo fragmento casi siempre es texto ajeno. Está medido en `INFORME.md` §Parte 2.
 
 ### Cómo correr los tests
 

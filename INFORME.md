@@ -217,3 +217,60 @@ Una fila por configuración, ordenadas por context_relevance. Cada fila enlaza a
 | 134 | [`mbert_ventana300_k1`](experimentos/mbert_ventana300_k1.jsonl.eval.json) | 0.1500 | 0.150 | 0.150 | 0.150 | 1.00 | 335 |
 | 135 | [`mbert_oracion1_k3`](experimentos/mbert_oracion1_k3.jsonl.eval.json) | 0.1250 | 0.250 | 0.083 | 0.175 | 3.00 | 366 |
 | 136 | [`mbert_oracion1_k1`](experimentos/mbert_oracion1_k1.jsonl.eval.json) | 0.1000 | 0.100 | 0.100 | 0.100 | 1.00 | 114 |
+
+## Parte 2: agente con dos fuentes
+
+### Configuración entregada
+
+| Modelo | Framework | Temperatura | Herramientas | `top_k` de `buscar_documentos` | Tope de vueltas |
+|---|---|---|---|---|---|
+| `deepseek/deepseek-v4-flash-0731` vía OpenRouter | LangChain (`ChatOpenAI` + `@tool`), loop de tool calling propio | 0 | 6 | el de la parte 1 (k = 1) | 6 |
+
+Resultado sobre las 12 preguntas de `dev` (`respuestas.jsonl.eval.json`):
+
+| ruteo | context_relevance | faithfulness | answer_relevance | costo del agente | costo del juez |
+|---|---|---|---|---|---|
+| **1.000** | **5.00** | **5.00** | **5.00** | USD 0,00313 | USD 0,01782 |
+
+Las tres notas del juez son 5 en las 12 preguntas, y el ruteo es perfecto: cada pregunta llamó exactamente las herramientas esperadas, sin ninguna de más. El criterio de éxito de la consigna (ruteo cercano a 1 y las tres métricas por encima de 4) queda cumplido con margen.
+
+### Diseño: las tres decisiones que movieron la aguja
+
+**1. El loop está escrito a mano, no con `AgentExecutor`.** La consigna pide, como evidencia obligatoria, las llamadas a herramientas con sus argumentos y resultados y el usage de cada llamada al modelo. Con un executor cerrado eso no se ve. El loop de `agente.py` es de quince líneas: invoca el modelo, ejecuta las `tool_calls` que pida, devuelve los resultados como `ToolMessage` y corta cuando el modelo contesta sin pedir más herramientas. De paso, los `contextos` que pide el evaluador salen exactos: son los resultados de las herramientas, en orden de llamada.
+
+**2. Las descripciones de las tools son el mecanismo de ruteo.** El modelo elige leyéndolas, así que cada una dice qué devuelve, cuándo usarla y, sobre todo, **dónde no está el dato**: `buscar_documentos` aclara que el estado del día no está en los documentos, y las tools de API aclaran que las normas y requisitos no están en la API. Ese cruce explícito es lo que hace que las preguntas mixtas (A10, A11, A12) encadenen las dos fuentes solas. Las que tienen un conjunto cerrado de valores (sectores, especialidades) los listan en la descripción, y ante un nombre inexistente la API devuelve las opciones válidas, así que el modelo se corrige sin intervención.
+
+**3. El system prompt protege las tres métricas del juez.** Una regla por métrica: contestar solo con lo que devolvieron las herramientas y decir "no lo pude obtener" antes que completar de memoria (`faithfulness`); usar todas las herramientas que la pregunta necesite antes de contestar (`answer_relevance` en las mixtas); no llamar herramientas que no aporten (`context_relevance`).
+
+### El experimento del `top_k`: más contexto empeoró la nota
+
+La parte 1 entrega k = 1 porque su métrica castiga cada fragmento de más. La intuición al armar el agente era la contraria: que un asistente conversacional necesita más contexto que el evaluador de recuperación, sobre todo en las preguntas mixtas. Lo medimos con las dos corridas completas:
+
+| Corrida | `top_k` | ruteo | context_relevance | faithfulness | answer_relevance | caracteres de contexto | tokens (entrada/salida) | costo agente |
+|---|---|---|---|---|---|---|---|---|
+| [k=1](experimentos/respuestas_k1.jsonl.eval.json) (entregada) | config de la parte 1 | 1.000 | **5.00** | 5.00 | 5.00 | 3.292 | 41.332 / 2.120 | USD 0,00313 |
+| [k=2](experimentos/respuestas_k2.jsonl.eval.json) | 2 | 1.000 | 4.50 | 5.00 | 5.00 | 4.754 (+44 %) | 41.728 / 2.349 | USD 0,00342 |
+
+**La intuición estaba mal.** Pedir dos fragmentos bajó `context_relevance` medio punto y no mejoró nada: `faithfulness` y `answer_relevance` quedaron en 5 en las dos corridas. La penalización es quirúrgica — cae exactamente en las 6 preguntas donde el segundo fragmento es texto ajeno (A01, A02, A03, A04, A10, A12) y no toca las 5 que solo usan la API. El juez lo dice con todas las letras:
+
+> A01: "El primer contexto contiene la información exacta y requerida para responder, **aunque se recuperó un segundo contexto innecesario**."
+> A02: "...**aunque se recuperó un segundo fragmento no pertinente sobre vejiga llena**."
+
+El caso que motivó la prueba fue A10 ("¿hay lugar en pediatría y me puedo quedar con él?"). Con k = 1, el fragmento recuperado es la norma **general** de acompañantes ("uno por paciente durante la noche") y no la **específica** de pediatría, que está en otra sección (`visitas.md`: "Madre, padre o tutor pueden permanecer las 24 horas"). Con k = 2 tampoco apareció: el modelo consulta *"acompañante en internación de pediatría"*, y con esa consulta la regla de las 24 horas cae recién en la posición 4 del ranking. O sea que ni siquiera k = 2 arreglaba el caso que lo justificaba, mientras ensuciaba las otras cinco preguntas de documentos.
+
+La conclusión es que los dos criterios empujan para el mismo lado: lo que la parte 1 mide como precisión de fragmentos, el juez del agente lo mide como ruido en los contextos. **Se entrega el `top_k` de la parte 1**, y `herramientas/documentos.py` lo deja explícito con `TOP_K = None`.
+
+Vale anotar el límite de esta conclusión: A10 sigue respondiéndose con la norma general en vez de la de pediatría, y el juez igual le puso 5 en las tres métricas. Con un juez más estricto, o con una pregunta de test donde la diferencia entre la regla general y la específica cambie la respuesta, ese caso se pierde. Arreglarlo de verdad no es cuestión de `top_k` sino del ranking: el fragmento correcto está en el corpus pero el recuperador lo pone cuarto.
+
+### Riesgos para el conjunto de test
+
+- **12 preguntas es muy poco** y las tres notas están en el techo, así que no hay señal para seguir optimizando contra `dev`. Cualquier ajuste más fino sería tunear a ciegas.
+- **El ruteo perfecto depende de las descripciones de las tools**, no de las preguntas: no hay ningún mapeo hardcodeado del estilo "nene → pediatría". Una pregunta de test con una especialidad que no esté en la lista de la descripción va a fallar la primera llamada, pero la API devuelve las opciones válidas y el modelo reintenta (el tope de 6 vueltas da lugar a eso).
+- **El caso A10** descrito arriba es el punto flojo conocido: preguntas donde existe una regla general y una específica para el sector, y el recuperador devuelve la general.
+
+### Evidencia
+
+- `respuestas.jsonl` y `respuestas.jsonl.eval.json`: la corrida entregada.
+- `experimentos/logs/agente_k1.md` y `experimentos/logs/agente_k2.md`: el log de cada corrida, con cada pregunta, cada llamada a herramienta con argumentos y resultado, la respuesta final y el usage (tokens y costo real informado por OpenRouter) de cada llamada al modelo.
+- `experimentos/respuestas_k1.jsonl`, `experimentos/respuestas_k2.jsonl` y sus `.eval.json`: las dos corridas comparadas arriba.
+- `specs/parte2-agente.md`: el diseño previo, con las decisiones y su justificación.
