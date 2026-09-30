@@ -74,6 +74,32 @@ npx @modelcontextprotocol/inspector python3 servidor_mcp.py   # probar las 6 her
 python3 atencion/test_atencion.py atencion.py
 ```
 
+## Estado del código
+
+| Parte | Estado |
+|---|---|
+| 1 | SPEC en `specs/parte1-rag.md`. `recuperar.py` pendiente. |
+| 2 | `agente.py` + `herramientas/` funcionando contra la API real. Falta enchufar el recuperador (hoy usa un stub) y la corrida del benchmark. SPEC en `specs/parte2-agente.md`. |
+| 3, 4, 5 | pendientes |
+
+### Interfaz entre la parte 1 y la parte 2
+
+Para poder trabajar en paralelo, `recuperar.py` tiene que exponer — además de su CLI — esta función a nivel de módulo:
+
+```python
+def buscar(consulta: str, top_k: int | None = None) -> list[str]:
+    """Fragmentos más relevantes del corpus, en orden de relevancia descendente.
+    top_k=None usa la configuración ganadora fija de la parte 1."""
+```
+
+Devuelve texto crudo del corpus (sin reformatear) y carga el encoder de forma perezosa, en la primera llamada. `herramientas/documentos.py` la usa cuando existe y cae a un stub mientras tanto, avisando por `stderr`: el día que `recuperar.py` aparezca, la parte 2 lo toma sin cambios.
+
+### Cómo correr los tests
+
+```bash
+python3 -m pytest tests/ -q     # no usa red ni gasta créditos: levanta la API real y mockea el modelo
+```
+
 ## Reglas importantes
 
 - **No modificar** `evaluar/evaluar.py`, `api/`, `datos/` ni `atencion/test_atencion.py` — la cátedra corre sus propias copias.

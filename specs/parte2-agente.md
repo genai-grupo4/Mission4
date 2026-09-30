@@ -136,6 +136,17 @@ Todo lo que se pueda testear sin red se testea sin red.
 5. `test_agente.py` — el loop corre contra un **modelo falso** que emite `tool_calls` scripteadas: verifica que ejecuta las tools, que corta cuando no hay más llamadas, que respeta `MAX_VUELTAS`, y que la línea JSONL de salida tiene exactamente los cuatro campos del contrato.
 6. Recién con todo en verde, la corrida real contra OpenRouter (cuesta plata: una sola vez por cambio que valga la pena medir).
 
+## Estado de la implementación
+
+Hecho y en verde (43 tests, sin red): el cliente de la API, el adaptador al recuperador con su stub, las 6 tools, el loop de tool calling, la salida JSONL y el log `.md`.
+
+Desvíos respecto del diseño de arriba, cerrados durante la implementación:
+
+- El loop vive en `agente.py` y no en un módulo aparte: `agente_mcp.py` (parte 3) va a importar `responder`/`correr` de acá, que no tienen nada específico de las tools locales — reciben el catálogo de herramientas por parámetro.
+- Las listas de valores válidos (sectores, especialidades) quedaron escritas en los docstrings de las tools, no armadas por `.format()` a posteriori.
+
+Smoke test real contra OpenRouter (1 pregunta, A05): el agente llamó a `consultar_camas`, contestó lo mismo que la respuesta de referencia y OpenRouter devolvió el costo real de cada llamada (USD 0,000181 la pregunta, ~USD 0,002 proyectado para las 12). Es decir: los costos del log son reales, no estimados.
+
 ## Qué queda pendiente de la parte 1
 
 - [ ] Enchufar `recuperar.buscar` real en `herramientas/documentos.py` (hoy: stub).
