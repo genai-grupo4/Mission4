@@ -1,8 +1,8 @@
 {
- "encoder": "e5small",
+ "encoder": "bgem3",
  "chunking": "seccion",
- "metadatos": false,
- "k": 3,
+ "metadatos": true,
+ "k": 1,
  "umbral": null,
  "margen": null,
  "reranker": null
