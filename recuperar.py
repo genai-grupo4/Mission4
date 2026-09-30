@@ -5,7 +5,7 @@
 La configuración entregada está fija en config_recuperador.json. Los flags opcionales
 (--encoder, --chunking, --k, ...) solo se usan para correr los experimentos.
 
-Para las partes 2 y 3: `from recuperar import recuperar` y `recuperar("pregunta")`.
+Para las partes 2 y 3 (interfaz acordada en specs/parte2-agente.md): `from recuperar import buscar` y `buscar("pregunta", top_k=5)`.
 """
 import argparse
 import json
@@ -13,7 +13,7 @@ from pathlib import Path
 
 from rag.chunking import cargar_corpus, fragmentar
 from rag.embeddings import cargar_encoder
-from rag.indice import buscar
+from rag.indice import buscar as buscar_coseno
 
 RAIZ = Path(__file__).resolve().parent
 CONFIG = RAIZ / "config_recuperador.json"
@@ -45,11 +45,11 @@ class Recuperador:
         for consulta, q in zip(consultas, qs):
             if self.reranker:
                 # el cross-encoder reordena los mejores candidatos del coseno y se queda con k
-                cand, _ = buscar(q, self.emb, k=cfg.get("candidatos", 10))
+                cand, _ = buscar_coseno(q, self.emb, k=cfg.get("candidatos", 10))
                 puntajes = self.reranker.predict([(consulta, self.fragmentos[i].texto) for i in cand])
                 idx = [cand[i] for i in sorted(range(len(cand)), key=lambda i: -puntajes[i])[:k]]
             else:
-                idx, _ = buscar(q, self.emb, k=k, umbral=cfg.get("umbral"), margen=cfg.get("margen"))
+                idx, _ = buscar_coseno(q, self.emb, k=k, umbral=cfg.get("umbral"), margen=cfg.get("margen"))
             salida.append([self.fragmentos[i].texto for i in idx])
         return salida
 
@@ -57,12 +57,12 @@ class Recuperador:
 _recuperador = None
 
 
-def recuperar(consulta, k=None):
+def buscar(consulta, top_k=None):
     """Fragmentos más relevantes para una consulta, con la configuración entregada."""
     global _recuperador
     if _recuperador is None:
         _recuperador = Recuperador(leer_config())
-    return _recuperador.buscar_lote([consulta], k=k)[0]
+    return _recuperador.buscar_lote([consulta], k=top_k)[0]
 
 
 def correr(preguntas, salida, recuperador):

@@ -22,6 +22,20 @@ def test_contrato_de_salida(tmp_path):
         assert all(isinstance(t, str) and t for t in f["fragmentos"])
 
 
+def test_interfaz_acordada_con_la_parte_2():
+    # specs/parte2-agente.md: herramientas/documentos.py busca recuperar.buscar(consulta, top_k=None)
+    import inspect
+    params = inspect.signature(recuperar.buscar).parameters
+    assert list(params) == ["consulta", "top_k"] and params["top_k"].default is None
+
+
+@pytest.mark.lento
+def test_buscar_devuelve_texto_crudo_del_corpus():
+    frags = recuperar.buscar("¿Cuántas sesiones de kinesio cubre una orden?", top_k=2)
+    assert len(frags) == 2 and all(isinstance(f, str) for f in frags)
+    assert "un máximo de 10 sesiones" in frags[0]
+
+
 def test_config_entregada_es_valida():
     cfg = recuperar.leer_config()
     from rag.chunking import CHUNKERS

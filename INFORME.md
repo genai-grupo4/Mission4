@@ -73,7 +73,7 @@ El margen relativo y el umbral absoluto son formas de devolver "1 o más según 
 
 - **20 preguntas es poco:** cada pregunta vale 0,05 de CR, y varias configuraciones están a una pregunta de distancia. Elegimos priorizando lo que es estable en toda la matriz (sección + metadatos + un encoder de oraciones grande), no el máximo aislado. El caso de `e5base_ventana600_k1`, que saca 0,95 sin metadatos mientras que sus vecinos sacan 0,80–0,85, se descartó como ruido.
 - **k = 1 asume una evidencia por pregunta.** Si el test trae preguntas con dos evidencias en secciones distintas, se pierde recall. Aceptamos ese riesgo porque la consigna dice que el test tiene "la misma forma" que `dev`, y en `dev` las 20 tienen una sola evidencia.
-- **Para el agente (partes 2 y 3)**, `recuperar(consulta, k=...)` permite pedir más fragmentos, porque al agente le sirve más contexto que al evaluador de la parte 1.
+- **Para el agente (partes 2 y 3)**, `recuperar.buscar(consulta, top_k=...)` (la interfaz acordada en `specs/parte2-agente.md`) permite pedir más fragmentos, porque al agente le sirve más contexto que al evaluador de la parte 1.
 
 ### Tabla completa de experimentos
 
