@@ -1,0 +1,11 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+== etapa B
+== etapa C
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights:  24%|██▍       | 48/199 [00:00<00:00, 423.00it/s]Loading weights:  46%|████▌     | 91/199 [00:00<00:00, 315.87it/s]Loading weights:  62%|██████▏   | 124/199 [00:00<00:00, 298.80it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 413.53it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights:  10%|▉         | 20/201 [00:00<00:00, 199.23it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 1183.85it/s]
+e5base_ventana600_meta_k1_rerank              CR 0.8000  R 0.800  P 0.800
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 15972.62it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights:  41%|████      | 82/201 [00:00<00:00, 805.88it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 1447.54it/s]
+bgem3_seccion_meta_k1_rerank                  CR 0.9000  R 0.900  P 0.900
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights:  22%|██▏       | 44/201 [00:00<00:00, 431.62it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 1380.48it/s]
+bgem3_ventana600_meta_k1_rerank               CR 0.8500  R 0.850  P 0.850

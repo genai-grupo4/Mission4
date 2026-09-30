@@ -1,0 +1,121 @@
+== etapa A
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]Loading weights: 100%|██████████| 197/197 [00:00<00:00, 12554.55it/s]
+[transformers] [1mBertModel LOAD REPORT[0m from: dccuchile/bert-base-spanish-wwm-cased
+Key                                        | Status     | 
+-------------------------------------------+------------+-
+cls.predictions.transform.LayerNorm.weight | UNEXPECTED | 
+cls.predictions.transform.LayerNorm.bias   | UNEXPECTED | 
+cls.predictions.decoder.bias               | UNEXPECTED | 
+cls.predictions.bias                       | UNEXPECTED | 
+cls.predictions.decoder.weight             | UNEXPECTED | 
+cls.predictions.transform.dense.weight     | UNEXPECTED | 
+cls.predictions.transform.dense.bias       | UNEXPECTED | 
+pooler.dense.bias                          | MISSING    | 
+pooler.dense.weight                        | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+beto_seccion_k1                               CR 0.3000  R 0.300  P 0.300
+beto_seccion_k3                               CR 0.2500  R 0.500  P 0.167
+beto_parrafo_k1                               CR 0.3500  R 0.350  P 0.350
+beto_parrafo_k3                               CR 0.3000  R 0.600  P 0.200
+beto_oracion1_k1                              CR 0.2500  R 0.250  P 0.250
+beto_oracion1_k3                              CR 0.1750  R 0.350  P 0.117
+beto_oracion2_k1                              CR 0.4500  R 0.450  P 0.450
+beto_oracion2_k3                              CR 0.2950  R 0.500  P 0.217
+beto_oracion3_k1                              CR 0.4000  R 0.400  P 0.400
+beto_oracion3_k3                              CR 0.2750  R 0.550  P 0.183
+beto_ventana300_k1                            CR 0.6000  R 0.600  P 0.600
+beto_ventana300_k3                            CR 0.3150  R 0.600  P 0.217
+beto_ventana600_k1                            CR 0.4000  R 0.400  P 0.400
+beto_ventana600_k3                            CR 0.2750  R 0.550  P 0.183
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights:  20%|█▉        | 39/199 [00:00<00:00, 368.44it/s]Loading weights:  38%|███▊      | 76/199 [00:00<00:00, 343.38it/s]Loading weights:  56%|█████▌    | 111/199 [00:00<00:00, 288.83it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 500.95it/s]
+[transformers] [1mBertModel LOAD REPORT[0m from: google-bert/bert-base-multilingual-cased
+Key                                        | Status     |  | 
+-------------------------------------------+------------+--+-
+cls.predictions.transform.LayerNorm.weight | UNEXPECTED |  | 
+cls.predictions.transform.LayerNorm.bias   | UNEXPECTED |  | 
+cls.seq_relationship.bias                  | UNEXPECTED |  | 
+cls.predictions.bias                       | UNEXPECTED |  | 
+cls.seq_relationship.weight                | UNEXPECTED |  | 
+cls.predictions.transform.dense.weight     | UNEXPECTED |  | 
+cls.predictions.transform.dense.bias       | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+mbert_seccion_k1                              CR 0.2500  R 0.250  P 0.250
+mbert_seccion_k3                              CR 0.1750  R 0.350  P 0.117
+mbert_parrafo_k1                              CR 0.2500  R 0.250  P 0.250
+mbert_parrafo_k3                              CR 0.1750  R 0.350  P 0.117
+mbert_oracion1_k1                             CR 0.1000  R 0.100  P 0.100
+mbert_oracion1_k3                             CR 0.1250  R 0.250  P 0.083
+mbert_oracion2_k1                             CR 0.2500  R 0.250  P 0.250
+mbert_oracion2_k3                             CR 0.2050  R 0.350  P 0.150
+mbert_oracion3_k1                             CR 0.2000  R 0.200  P 0.200
+mbert_oracion3_k3                             CR 0.1750  R 0.350  P 0.117
+mbert_ventana300_k1                           CR 0.1500  R 0.150  P 0.150
+mbert_ventana300_k3                           CR 0.2300  R 0.400  P 0.167
+mbert_ventana600_k1                           CR 0.2500  R 0.250  P 0.250
+mbert_ventana600_k3                           CR 0.2650  R 0.500  P 0.183
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights:  66%|██████▌   | 131/199 [00:00<00:00, 1301.72it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 1684.35it/s]
+minilm_seccion_k1                             CR 0.7000  R 0.700  P 0.700
+minilm_seccion_k3                             CR 0.4500  R 0.900  P 0.300
+minilm_parrafo_k1                             CR 0.7500  R 0.750  P 0.750
+minilm_parrafo_k3                             CR 0.4500  R 0.900  P 0.300
+minilm_oracion1_k1                            CR 0.5500  R 0.550  P 0.550
+minilm_oracion1_k3                            CR 0.3250  R 0.650  P 0.217
+minilm_oracion2_k1                            CR 0.7500  R 0.750  P 0.750
+minilm_oracion2_k3                            CR 0.5150  R 0.850  P 0.383
+minilm_oracion3_k1                            CR 0.7500  R 0.750  P 0.750
+minilm_oracion3_k3                            CR 0.4550  R 0.850  P 0.317
+minilm_ventana300_k1                          CR 0.8500  R 0.850  P 0.850
+minilm_ventana300_k3                          CR 0.4950  R 0.900  P 0.350
+minilm_ventana600_k1                          CR 0.8500  R 0.850  P 0.850
+minilm_ventana600_k3                          CR 0.4550  R 0.850  P 0.317
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights:  87%|████████▋ | 174/199 [00:00<00:00, 1695.43it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 1837.97it/s]
+e5small_seccion_k1                            CR 0.8000  R 0.800  P 0.800
+e5small_seccion_k3                            CR 0.4500  R 0.900  P 0.300
+e5small_parrafo_k1                            CR 0.8000  R 0.800  P 0.800
+e5small_parrafo_k3                            CR 0.4500  R 0.900  P 0.300
+e5small_oracion1_k1                           CR 0.5500  R 0.550  P 0.550
+e5small_oracion1_k3                           CR 0.4000  R 0.800  P 0.267
+e5small_oracion2_k1                           CR 0.8000  R 0.800  P 0.800
+e5small_oracion2_k3                           CR 0.5550  R 0.900  P 0.417
+e5small_oracion3_k1                           CR 0.7500  R 0.750  P 0.750
+e5small_oracion3_k3                           CR 0.4800  R 0.900  P 0.333
+e5small_ventana300_k1                         CR 0.7500  R 0.750  P 0.750
+e5small_ventana300_k3                         CR 0.5000  R 0.850  P 0.367
+e5small_ventana600_k1                         CR 0.8500  R 0.850  P 0.850
+e5small_ventana600_k3                         CR 0.5050  R 0.950  P 0.350
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights:   9%|▉         | 18/199 [00:00<00:01, 169.42it/s]Loading weights:  18%|█▊        | 35/199 [00:00<00:00, 166.78it/s]Loading weights:  28%|██▊       | 56/199 [00:00<00:00, 164.22it/s]Loading weights:  51%|█████▏    | 102/199 [00:00<00:00, 264.34it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 414.43it/s]
+e5base_seccion_k1                             CR 0.8500  R 0.850  P 0.850
+e5base_seccion_k3                             CR 0.4500  R 0.900  P 0.300
+e5base_parrafo_k1                             CR 0.8000  R 0.800  P 0.800
+e5base_parrafo_k3                             CR 0.4500  R 0.900  P 0.300
+e5base_oracion1_k1                            CR 0.6000  R 0.600  P 0.600
+e5base_oracion1_k3                            CR 0.4000  R 0.800  P 0.267
+e5base_oracion2_k1                            CR 0.7500  R 0.750  P 0.750
+e5base_oracion2_k3                            CR 0.5300  R 0.850  P 0.400
+e5base_oracion3_k1                            CR 0.8500  R 0.850  P 0.850
+e5base_oracion3_k3                            CR 0.4800  R 0.900  P 0.333
+e5base_ventana300_k1                          CR 0.8500  R 0.850  P 0.850
+e5base_ventana300_k3                          CR 0.5750  R 1.000  P 0.417
+e5base_ventana600_k1                          CR 0.9500  R 0.950  P 0.950
+e5base_ventana600_k3                          CR 0.5200  R 0.950  P 0.367
+Loading weights:   0%|          | 0/391 [00:00<?, ?it/s]Loading weights: 100%|██████████| 391/391 [00:00<00:00, 15462.69it/s]
+bgem3_seccion_k1                              CR 0.9000  R 0.900  P 0.900
+bgem3_seccion_k3                              CR 0.4500  R 0.900  P 0.300
+bgem3_parrafo_k1                              CR 0.9000  R 0.900  P 0.900
+bgem3_parrafo_k3                              CR 0.4500  R 0.900  P 0.300
+bgem3_oracion1_k1                             CR 0.6500  R 0.650  P 0.650
+bgem3_oracion1_k3                             CR 0.4000  R 0.800  P 0.267
+bgem3_oracion2_k1                             CR 0.9000  R 0.900  P 0.900
+bgem3_oracion2_k3                             CR 0.5550  R 0.900  P 0.417
+bgem3_oracion3_k1                             CR 0.9000  R 0.900  P 0.900
+bgem3_oracion3_k3                             CR 0.4800  R 0.900  P 0.333
+bgem3_ventana300_k1                           CR 0.8500  R 0.850  P 0.850
+bgem3_ventana300_k3                           CR 0.5750  R 1.000  P 0.417
+bgem3_ventana600_k1                           CR 0.8500  R 0.850  P 0.850
+bgem3_ventana600_k3                           CR 0.5450  R 1.000  P 0.383
