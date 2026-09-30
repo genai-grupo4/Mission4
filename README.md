@@ -18,19 +18,39 @@ Repo del grupo para la misión del Hospital Provincial Arroyo Claro (ficticio): 
 
 ## Estructura del repo
 
+Lo que entregó la cátedra (no modificar):
+
 ```
 datos/corpus/                     20 documentos del hospital (Markdown) — base de conocimiento de la parte 1
 datos/preguntas_recuperacion_dev.jsonl   preguntas dev para la parte 1
 datos/preguntas_agente_dev.jsonl         preguntas dev para las partes 2 y 3
 api/servidor.py                   API del hospital (estado del día: camas, guardias, turnos, farmacia, espera)
-evaluar/evaluar.py                evaluador de la cátedra (no modificar)
-atencion/test_atencion.py         tests de la parte 4 (no modificar)
+evaluar/evaluar.py                evaluador de la cátedra
+atencion/test_atencion.py         tests de la parte 4
 a_mano/ejercicio.md               consigna de la parte 5
-experimentos/                     evidencia de cada configuración probada (a crear)
-INFORME.md                        informe final (a crear)
 ```
 
-Archivos que hay que escribir nosotros (no existen todavía): `recuperar.py`, `agente.py`, `servidor_mcp.py`, `agente_mcp.py`, `atencion.py`, `INFORME.md`.
+Lo nuestro:
+
+```
+recuperar.py                      parte 1: CLI del recuperador; expone buscar() para el agente
+config_recuperador.json           parte 1: la configuración ganadora, fija
+rag/                              parte 1: chunking, embeddings e índice coseno
+agente.py                         parte 2: CLI + loop de tool calling con LangChain
+herramientas/
+  api_hospital.py                 cliente de la API del hospital (solo stdlib)
+  documentos.py                   adaptador a recuperar.buscar()
+  tools.py                        las 6 tools de LangChain
+  registro.py                     el log .md de cada corrida del agente
+tests/                            pytest de las partes 1 y 2 (66 tests)
+specs/                            un SPEC por parte, escrito antes del código
+experimentos/                     toda la evidencia: .eval.json por configuración y logs de corrida
+respuestas.jsonl(.eval.json)      la corrida entregada de la parte 2
+resultados.jsonl(.eval.json)      la corrida entregada de la parte 1
+INFORME.md                        el informe
+```
+
+Todavía por escribir: `servidor_mcp.py`, `agente_mcp.py` (parte 3) y `atencion.py` (parte 4).
 
 ## Antes de empezar
 
@@ -57,7 +77,12 @@ Cada corrida del evaluador con juez cuesta plata real de la cuenta del grupo —
 
 ## Comandos por parte
 
+Todos se corren con el `.venv` activado. Los de las partes 2 y 3 necesitan además la API del hospital levantada y `OPENROUTER_API_KEY` en el entorno.
+
 ```bash
+pytest -q          # los 66 tests de las partes 1 y 2; no usa red ni gasta créditos
+                   # (los que bajan modelos de Hugging Face están marcados `lento` y se corren con -m lento)
+
 # Parte 1
 python3 recuperar.py --preguntas datos/preguntas_recuperacion_dev.jsonl --salida resultados.jsonl
 python3 evaluar/evaluar.py recuperacion --preguntas datos/preguntas_recuperacion_dev.jsonl --resultados resultados.jsonl
@@ -109,12 +134,6 @@ def buscar(consulta: str, top_k: int | None = None) -> list[str]:
 Devuelve texto crudo del corpus (sin reformatear) y carga el encoder de forma perezosa, en la primera llamada. `herramientas/documentos.py` la usa cuando existe y cae a un stub si no, avisando por `stderr`. Quedó implementada tal cual, así que la parte 2 la tomó sin cambios.
 
 El agente **no pisa** el `top_k` de la parte 1 (`TOP_K = None`): se probó con `top_k=2` y el juez bajó `context_relevance` de 5,00 a 4,50, porque el segundo fragmento casi siempre es texto ajeno. Está medido en `INFORME.md` §Parte 2.
-
-### Cómo correr los tests
-
-```bash
-python3 -m pytest tests/ -q     # no usa red ni gasta créditos: levanta la API real y mockea el modelo
-```
 
 ## Reglas importantes
 
