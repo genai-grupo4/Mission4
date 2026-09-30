@@ -149,8 +149,8 @@ Smoke test real contra OpenRouter (1 pregunta, A05): el agente llamó a `consult
 
 ## Qué queda pendiente de la parte 1
 
-- [ ] Enchufar `recuperar.buscar` real en `herramientas/documentos.py` (hoy: stub).
-- [ ] Ajustar el `top_k` que usa `buscar_documentos` según lo que rinda en la evaluación del agente: el óptimo para el juez puede no ser el mismo que el óptimo de la parte 1 (allá penaliza precision de fragmentos, acá penaliza ruido en los contextos).
+- [x] Enchufar `recuperar.buscar` real en `herramientas/documentos.py`. Llegó con la firma acordada, así que el adaptador lo tomó sin cambios.
+- [x] Definir el `top_k` de `buscar_documentos`: queda en `None`, delegando en la configuración ganadora de la parte 1 (bge-m3, sección con metadatos, k=1, `context_relevance` 1.0). Los dos criterios empujan para el mismo lado — allá penaliza la precision de los fragmentos, acá el ruido en los contextos —, así que no hay razón para pedir más fragmentos de los que la parte 1 midió como óptimos. Si la evaluación del agente muestra que a alguna pregunta le falta contexto, se sube acá y se vuelve a medir.
 - [ ] Corrida real del benchmark + `respuestas.jsonl.eval.json` + análisis de fallos en `INFORME.md`.
 
 ## Decisiones abiertas
