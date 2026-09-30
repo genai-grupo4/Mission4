@@ -1,0 +1,9 @@
+{
+ "encoder": "e5small",
+ "chunking": "seccion",
+ "metadatos": false,
+ "k": 3,
+ "umbral": null,
+ "margen": null,
+ "reranker": null
+}
