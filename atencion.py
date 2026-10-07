@@ -30,3 +30,9 @@ def autoatencion(X, Wq, Wk, Wv, mascara=False):
     """Proyecta X a Q, K y V y aplica atencion sobre la misma secuencia."""
     X = np.asarray(X, dtype=float)
     return atencion(X @ Wq, X @ Wk, X @ Wv, mascara=mascara)
+
+
+def multicabeza(X, cabezas, Wo, mascara=False):
+    """Corre una autoatencion por cabeza (Wq, Wk, Wv), concatena las salidas y proyecta con Wo."""
+    salidas = [autoatencion(X, Wq, Wk, Wv, mascara=mascara)[0] for Wq, Wk, Wv in cabezas]
+    return np.concatenate(salidas, axis=-1) @ Wo
