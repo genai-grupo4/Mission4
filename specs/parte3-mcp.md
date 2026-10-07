@@ -1,6 +1,6 @@
 # SPEC — Parte 3: las mismas herramientas como servidor MCP (`servidor_mcp.py`, `agente_mcp.py`)
 
-Estado: borrador, antes de escribir código. Fuente de verdad de la consigna: `mission.md` §"Parte 3". Reglas operativas: `CLAUDE.md`.
+Estado: implementado y corrido contra OpenRouter (ver "Estado de la implementación" al final). Fuente de verdad de la consigna: `mission.md` §"Parte 3". Reglas operativas: `CLAUDE.md`.
 
 ## Objetivo
 
@@ -114,3 +114,11 @@ El criterio de éxito de la consigna pide comparar las 4 métricas (ruteo + 3 de
 ## Decisiones abiertas
 
 - [ ] ¿Vale la pena una sesión MCP persistente (en vez de una por llamada) para la corrida real, por velocidad? Mientras los tiempos sean razonables para 12 preguntas, no — el modo básico de la librería alcanza y es menos código.
+
+## Estado de la implementación
+
+Hecho y en verde (21 tests, sin red salvo el stdio real contra `servidor_mcp.py`): las 6 tools MCP, el loop async, la salida JSONL y el log `.md`. Capturas del MCP Inspector con las 6 herramientas en `experimentos/inspector/`.
+
+Corrida real contra OpenRouter + servidor MCP real (12 preguntas de `dev`): ruteo 1.000 y 5.00/5.00/5.00 del juez, idéntico a la parte 2. Comparación completa de métricas y costo en `INFORME.md` §Parte 3.
+
+Desvío respecto al diseño de arriba: ninguno nuevo — el único desvío relevante (`responder`/`correr` async en vez de reusar los de `agente.py`) ya estaba anticipado y documentado en la sección "Desvío" de este mismo spec antes de escribir el código.

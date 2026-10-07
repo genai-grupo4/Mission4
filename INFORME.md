@@ -274,3 +274,35 @@ Vale anotar el límite de esta conclusión: A10 sigue respondiéndose con la nor
 - `experimentos/logs/agente_k1.md` y `experimentos/logs/agente_k2.md`: el log de cada corrida, con cada pregunta, cada llamada a herramienta con argumentos y resultado, la respuesta final y el usage (tokens y costo real informado por OpenRouter) de cada llamada al modelo.
 - `experimentos/respuestas_k1.jsonl`, `experimentos/respuestas_k2.jsonl` y sus `.eval.json`: las dos corridas comparadas arriba.
 - `specs/parte2-agente.md`: el diseño previo, con las decisiones y su justificación.
+
+## Parte 3: las mismas herramientas como servidor MCP
+
+### Configuración entregada
+
+`servidor_mcp.py` expone las 6 herramientas por el SDK oficial `mcp` (`FastMCP`, transporte stdio), como una capa fina sobre los mismos módulos que ya usaba la parte 2 (`herramientas/api_hospital.py` y `herramientas/documentos.py`): no hay ninguna lógica de HTTP ni de recuperación duplicada entre las dos partes.
+
+`agente_mcp.py` no importa esos módulos: carga las 6 tools en tiempo de ejecución con `langchain-mcp-adapters` (`MultiServerMCPClient.get_tools()`, que resuelve `tools/list`) y las llama con `ainvoke` (`tools/call`). El diseño del loop (prompt, tope de 6 vueltas, traza) es el mismo que `agente.py`, pero async: las tools que arma `langchain-mcp-adapters` solo exponen coroutine, porque toda llamada MCP habla con el servidor por stdio. El detalle de esta decisión está en `specs/parte3-mcp.md`, sección "Desvío".
+
+### Comparación con la parte 2
+
+| | `agente.py` (parte 2) | `agente_mcp.py` (parte 3) |
+|---|---|---|
+| ruteo | 1.000 | 1.000 |
+| context_relevance | 5.00 | 5.00 |
+| faithfulness | 5.00 | 5.00 |
+| answer_relevance | 5.00 | 5.00 |
+| tokens entrada/salida | 41332 / 2120 | 42264 / 2213 |
+| costo del agente (12 preguntas) | USD 0.003127 | USD 0.003394 |
+| costo del juez (evaluación) | — | USD 0.01891 |
+| duración de la corrida | 865.8 s | 329.4 s |
+
+Las cuatro métricas quedaron **idénticas** a la parte 2: mismo modelo, mismas 6 herramientas, mismo prompt — el transporte MCP no le cambia nada al modelo, solo cómo el proceso que lo llama consigue el resultado de la tool. Los tokens y el costo también quedan prácticamente iguales (diferencia de ~2-3%, dentro del ruido normal entre corridas con el mismo prompt: el modelo no repite la respuesta palabra por palabra de una corrida a otra). La duración sí varía bastante, pero en la dirección contraria a la esperada: la corrida MCP tardó menos (329 s) que la de la parte 2 (866 s). Esto no es una ventaja estructural del MCP — `MultiServerMCPClient` en modo básico abre una sesión stdio nueva por cada llamada a herramienta, y cada `buscar_documentos` recarga el encoder `bge-m3` desde cero (~20-40 s por carga, visible en el log). La diferencia de duración entre las dos corridas es ruido de red hacia OpenRouter de ese momento, no una comparación confiable de performance de transporte.
+
+**Riesgo de diseño a anotar:** para un volumen mayor de preguntas, el modo "una sesión por llamada" de `MultiServerMCPClient` sería notoriamente más lento que una sesión MCP persistente, porque cada `buscar_documentos` paga de nuevo la carga del encoder. Para las 12 preguntas de `dev` el costo es aceptable y evita manejar a mano el ciclo de vida de la sesión (ver "Decisiones abiertas" en `specs/parte3-mcp.md`).
+
+### Evidencia
+
+- `respuestas_mcp.jsonl` y `respuestas_mcp.jsonl.eval.json`: la corrida entregada.
+- `experimentos/logs/agente_mcp_20261007_152733.md`: el log de la corrida, con cada pregunta, cada llamada a herramienta (vía MCP) con argumentos y resultado, la respuesta final y el usage de cada llamada al modelo.
+- `experimentos/inspector/`: 6 capturas del MCP Inspector (`npx @modelcontextprotocol/inspector python3 servidor_mcp.py`), una por herramienta, probadas sin ningún LLM de por medio.
+- `specs/parte3-mcp.md`: el diseño previo, con la restricción de diseño, el desvío respecto al plan original y el plan de TDD.
