@@ -1,6 +1,6 @@
 # SPEC — Parte 4: una capa de atención en NumPy (`atencion.py`)
 
-Estado: en implementación. Fuente de verdad de la consigna: `mission.md` §"Parte 4". Reglas operativas: `CLAUDE.md`.
+Estado: implementado, 14/14 tests en verde con `python3 atencion/test_atencion.py atencion.py`. Fuente de verdad de la consigna: `mission.md` §"Parte 4". Reglas operativas: `CLAUDE.md`.
 
 ## Objetivo
 
