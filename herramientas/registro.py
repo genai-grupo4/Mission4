@@ -38,6 +38,13 @@ class UsoModelo:
         return self.costo_usd is None
 
 
+def extraer_uso(mensaje):
+    """El usage (tokens y costo real, si OpenRouter lo informó) de una respuesta del modelo."""
+    um = mensaje.usage_metadata or {}
+    costo = (mensaje.response_metadata.get("token_usage") or {}).get("cost")
+    return UsoModelo(um.get("input_tokens", 0), um.get("output_tokens", 0), costo)
+
+
 @dataclass
 class Traza:
     id: str

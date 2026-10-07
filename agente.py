@@ -15,11 +15,11 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
+from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_openai import ChatOpenAI
 
 from herramientas import registro, tools
-from herramientas.registro import LlamadaTool, Traza, UsoModelo
+from herramientas.registro import LlamadaTool, Traza, extraer_uso
 
 MODELO = "deepseek/deepseek-v4-flash-0731"
 BASE_URL = "https://openrouter.ai/api/v1"
@@ -57,12 +57,6 @@ def construir_modelo(temperatura=0):
     return llm.bind_tools(tools.TODAS)
 
 
-def _uso(mensaje: AIMessage):
-    um = mensaje.usage_metadata or {}
-    costo = (mensaje.response_metadata.get("token_usage") or {}).get("cost")
-    return UsoModelo(um.get("input_tokens", 0), um.get("output_tokens", 0), costo)
-
-
 def responder(modelo, pid, pregunta, catalogo=None, max_vueltas=MAX_VUELTAS):
     """Corre el loop de tool calling para una pregunta y devuelve su traza completa."""
     catalogo = tools.POR_NOMBRE if catalogo is None else catalogo
@@ -75,7 +69,7 @@ def responder(modelo, pid, pregunta, catalogo=None, max_vueltas=MAX_VUELTAS):
         except Exception as e:
             traza.error = f"la llamada al modelo falló: {e}"
             return traza
-        traza.usos.append(_uso(respuesta))
+        traza.usos.append(extraer_uso(respuesta))
         mensajes.append(respuesta)
 
         if not respuesta.tool_calls:
