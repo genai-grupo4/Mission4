@@ -42,15 +42,19 @@ herramientas/
   documentos.py                   adaptador a recuperar.buscar()
   tools.py                        las 6 tools de LangChain
   registro.py                     el log .md de cada corrida del agente
-tests/                            pytest de las partes 1 y 2 (66 tests)
+servidor_mcp.py                   parte 3: las 6 herramientas como servidor MCP (SDK `mcp`, stdio)
+agente_mcp.py                     parte 3: el agente con las tools del servidor vía langchain-mcp-adapters
+atencion.py                       parte 4: softmax, atención, autoatención, multicabeza y layer_norm en NumPy
+tests/                            pytest de las partes 1 a 3 (87 tests + 5 marcados `lento`)
 specs/                            un SPEC por parte, escrito antes del código
-experimentos/                     toda la evidencia: .eval.json por configuración y logs de corrida
-respuestas.jsonl(.eval.json)      la corrida entregada de la parte 2
+experimentos/                     toda la evidencia: .eval.json por configuración, logs de corrida y capturas del Inspector
 resultados.jsonl(.eval.json)      la corrida entregada de la parte 1
+respuestas.jsonl(.eval.json)      la corrida entregada de la parte 2
+respuestas_mcp.jsonl(.eval.json)  la corrida entregada de la parte 3
 INFORME.md                        el informe
 ```
 
-Todavía por escribir: `servidor_mcp.py`, `agente_mcp.py` (parte 3) y `atencion.py` (parte 4).
+Todavía por hacer: las hojas escaneadas de la parte 5 en `a_mano/`.
 
 ## Antes de empezar
 
@@ -80,7 +84,7 @@ Cada corrida del evaluador con juez cuesta plata real de la cuenta del grupo —
 Todos se corren con el `.venv` activado. Los de las partes 2 y 3 necesitan además la API del hospital levantada y `OPENROUTER_API_KEY` en el entorno.
 
 ```bash
-pytest -q          # los 66 tests de las partes 1 y 2; no usa red ni gasta créditos
+pytest -q          # los 87 tests de las partes 1 a 3; no usa red ni gasta créditos
                    # (los que bajan modelos de Hugging Face están marcados `lento` y se corren con -m lento)
 
 # Parte 1
@@ -105,21 +109,17 @@ python3 atencion/test_atencion.py atencion.py
 |---|---|---|
 | 1 | **terminada** — `recuperar.py` + `rag/`, 136 experimentos en `experimentos/` | context_relevance **1.000** |
 | 2 | **terminada** — `agente.py` + `herramientas/` | ruteo **1.000**, juez **5,00 / 5,00 / 5,00** |
-| 3 | pendiente — `servidor_mcp.py` + `agente_mcp.py` + capturas del Inspector | |
-| 4 | pendiente — `atencion.py` | |
+| 3 | **terminada** — `servidor_mcp.py` + `agente_mcp.py`, capturas en `experimentos/inspector/` | ruteo **1.000**, juez **5,00 / 5,00 / 5,00** |
+| 4 | **terminada** — `atencion.py` | **14/14** tests de la cátedra en verde |
 | 5 | pendiente — a mano, sin IA | |
 
 Los SPEC están en `specs/` (uno por parte) y el análisis de cada parte en `INFORME.md`.
 
 ### Qué falta para cerrar la entrega
 
-**Parte 3 (15 pts).** Mover las 6 herramientas a `servidor_mcp.py` (SDK `mcp`, stdio) y armar `agente_mcp.py` con `langchain-mcp-adapters`. La lógica ya está factorizada para esto: `herramientas/api_hospital.py` y `herramientas/documentos.py` son funciones planas, y `herramientas/tools.py` es solo la capa de LangChain encima — el servidor MCP puede envolver las mismas funciones sin duplicar nada. El loop de `agente.py` (`responder`, `correr`) recibe el catálogo de herramientas por parámetro, así que `agente_mcp.py` lo puede reutilizar pasándole las tools que vengan del servidor. Ojo con un detalle: las tools de `langchain-mcp-adapters` son async, así que hay que resolver eso (pasar el loop a async es lo más limpio, y `agente.py` seguiría igual por fuera). Faltan también las capturas del MCP Inspector en `experimentos/inspector/`.
-
-**Parte 4 (15 pts).** `atencion.py` con NumPy: `softmax`, `atencion`, `autoatencion` (con máscara causal opcional), `multicabeza` y `layer_norm`. No depende de nada de lo anterior y se verifica sola con `python3 atencion/test_atencion.py atencion.py` (14 tests).
-
 **Parte 5 (15 pts).** A mano, en papel, **sin IA**. Mirar antes el video de 3Blue1Brown que pide `mission.md`.
 
-**Informe.** Falta la sección de la parte 3 (comparación de métricas y costo contra la parte 2) y el costo total de la misión contrastado con el dashboard de OpenRouter. Gastado hasta ahora: USD 0,0066 del agente (dos corridas) + USD 0,0354 del juez (dos evaluaciones) = **USD 0,042**.
+**Informe.** Falta el costo total de la misión contrastado con el dashboard de actividad de OpenRouter. Según los `.eval.json` y los logs, lo gastado hasta ahora es: USD 0,0066 del agente de la parte 2 (dos corridas) + USD 0,0354 del juez (dos evaluaciones) + USD 0,0034 del agente MCP + USD 0,0189 de su evaluación = **~USD 0,064**. La parte 4 no gasta nada (es NumPy local).
 
 ### Interfaz entre la parte 1 y la parte 2
 
