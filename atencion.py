@@ -36,3 +36,11 @@ def multicabeza(X, cabezas, Wo, mascara=False):
     """Corre una autoatencion por cabeza (Wq, Wk, Wv), concatena las salidas y proyecta con Wo."""
     salidas = [autoatencion(X, Wq, Wk, Wv, mascara=mascara)[0] for Wq, Wk, Wv in cabezas]
     return np.concatenate(salidas, axis=-1) @ Wo
+
+
+def layer_norm(x, eps=1e-5):
+    """Normaliza cada fila a media 0 y varianza 1 (sin gamma/beta aprendidos)."""
+    x = np.asarray(x, dtype=float)
+    media = x.mean(axis=-1, keepdims=True)
+    var = x.var(axis=-1, keepdims=True)
+    return (x - media) / np.sqrt(var + eps)
