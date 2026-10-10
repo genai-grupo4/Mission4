@@ -51,10 +51,9 @@ experimentos/                     toda la evidencia: .eval.json por configuraci�
 resultados.jsonl(.eval.json)      la corrida entregada de la parte 1
 respuestas.jsonl(.eval.json)      la corrida entregada de la parte 2
 respuestas_mcp.jsonl(.eval.json)  la corrida entregada de la parte 3
+a_mano/ejercicio5.pdf             parte 5: hojas escaneadas, a mano y sin IA
 INFORME.md                        el informe
 ```
-
-Todavía por hacer: las hojas escaneadas de la parte 5 en `a_mano/`.
 
 ## Antes de empezar
 
@@ -111,15 +110,9 @@ python3 atencion/test_atencion.py atencion.py
 | 2 | **terminada** — `agente.py` + `herramientas/` | ruteo **1.000**, juez **5,00 / 5,00 / 5,00** |
 | 3 | **terminada** — `servidor_mcp.py` + `agente_mcp.py`, capturas en `experimentos/inspector/` | ruteo **1.000**, juez **5,00 / 5,00 / 5,00** |
 | 4 | **terminada** — `atencion.py` | **14/14** tests de la cátedra en verde |
-| 5 | pendiente — a mano, sin IA | |
+| 5 | **terminada** — hojas escaneadas en `a_mano/ejercicio5.pdf`, a mano y sin IA | |
 
-Los SPEC están en `specs/` (uno por parte) y el análisis de cada parte en `INFORME.md`.
-
-### Qué falta para cerrar la entrega
-
-**Parte 5 (15 pts).** A mano, en papel, **sin IA**. Mirar antes el video de 3Blue1Brown que pide `mission.md`.
-
-**Informe.** Falta el costo total de la misión contrastado con el dashboard de actividad de OpenRouter. Según los `.eval.json` y los logs, lo gastado hasta ahora es: USD 0,0066 del agente de la parte 2 (dos corridas) + USD 0,0354 del juez (dos evaluaciones) + USD 0,0034 del agente MCP + USD 0,0189 de su evaluación = **~USD 0,064**. La parte 4 no gasta nada (es NumPy local).
+Los SPEC están en `specs/` (uno por parte) y el análisis de cada parte en `INFORME.md`, que incluye el costo total de la misión (USD 0,0642 por logs, USD 0,0644 según el dashboard de OpenRouter) en su última sección.
 
 ### Interfaz entre la parte 1 y la parte 2
 

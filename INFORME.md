@@ -306,3 +306,26 @@ Las cuatro métricas quedaron **idénticas** a la parte 2: mismo modelo, mismas 
 - `experimentos/logs/agente_mcp_20261007_152733.md`: el log de la corrida, con cada pregunta, cada llamada a herramienta (vía MCP) con argumentos y resultado, la respuesta final y el usage de cada llamada al modelo.
 - `experimentos/inspector/`: 6 capturas del MCP Inspector (`npx @modelcontextprotocol/inspector python3 servidor_mcp.py`), una por herramienta, probadas sin ningún LLM de por medio.
 - `specs/parte3-mcp.md`: el diseño previo, con la restricción de diseño, el desvío respecto al plan original y el plan de TDD.
+
+## Costo total de la misión
+
+Sumando el `costo_juez_usd` de cada `.eval.json` con judge y el costo del agente de cada log `.md` (ambos informados por OpenRouter en cada llamada):
+
+| Corrida | costo agente (`deepseek-v4-flash-0731`) | costo juez (`gemini-3.7-flash`) |
+|---|---|---|
+| parte 2, `top_k=1` (entregada) | USD 0,003127 | USD 0,01782 |
+| parte 2, `top_k=2` (experimento) | USD 0,003423 | USD 0,01757 |
+| parte 3, MCP (entregada) | USD 0,003394 | USD 0,01891 |
+| **total** | **USD 0,009944** | **USD 0,05430** |
+
+**Total de la misión: USD 0,0642.** La parte 1 no gasta nada (el recuperador no llama a ningún LLM) y la parte 4 tampoco (NumPy local).
+
+Contra el dashboard de actividad de OpenRouter (`openrouter.ai/activity`, filtrado al rango de trabajo de la misión, 2026-09-23 a 2026-10-09, GMT-3): el gasto de la cuenta en esa ventana es exclusivamente de los dos modelos de la misión — no aparece ningún otro modelo en "Usage by model", así que no hay gasto previo a la misión mezclado en el filtro.
+
+| Modelo | Dashboard (suma del período) | % del total |
+|---|---|---|
+| `google/gemini-3.7-flash` (juez) | USD 0,0543 | 84,3 % |
+| `deepseek/deepseek-v4-flash-0731` (agente) | USD 0,0101 | 15,7 % |
+| **Total** | **USD 0,0644** | |
+
+El dashboard (USD 0,0644) coincide con la suma de los logs (USD 0,0642) a dos centésimos de centavo — la diferencia es puro redondeo de cada cifra individual a 4-6 decimales. No hay gasto sin explicar.
